@@ -1,0 +1,4 @@
+results/*.out
+*.pyc
+__pycache__/
+

@@ -1,5 +1,5 @@
 
-def read_dimacs(filename):
+def read_dimacs(/Users/puckvoorham/Desktop/sudoku-rules-4x4.txt):
     clauses = [] 
     num_vars = 0
     num_clauses = 0
@@ -38,33 +38,25 @@ def encode_cell(row, col, value):
     """Encodes a cell's row, column, and value into a DIMACS variable."""
     return 100 * row + 10 * col + value
 
-# def encode_puzzle_to_dimacs(puzzle, rules_file, output_file):
-#     """Encodes a single Sudoku puzzle into DIMACS format and writes to output."""
-#     dimacs_clauses = []
+def encode_puzzle_to_dimacs(puzzle, clauses, output_file):
+    """Encodes a single Sudoku puzzle into DIMACS format and writes to output."""
+    dimacs_clauses = clauses
 
-#     # Add the general Sudoku rules from the rules file
-#     with open(rules_file, 'r') as rules:
-#         for line in rules:
-#             if line.startswith('c') or line.startswith('p'):
-#                 # Skip comments and header line
-#                 continue
-#             dimacs_clauses.append(line.strip())
+    # Encode the puzzle's filled cells as clauses
+    for row in range(9):
+        for col in range(9):
+            value = puzzle[row * 9 + col]
+            if value.isdigit(): 
+                literal = encode_cell(row + 1, col + 1, int(value))
+                clauses.append(f"{literal} 0") 
 
-#     # Encode the puzzle's filled cells as clauses
-#     for row in range(9):
-#         for col in range(9):
-#             value = puzzle[row * 9 + col]
-#             if value.isdigit():  # if the cell is filled with a number 1-9
-#                 literal = encode_cell(row + 1, col + 1, int(value))
-#                 dimacs_clauses.append(f"{literal} 0")  # Each clause ends with 0
-
-#     # Write the DIMACS file
-#     num_vars = 729  # 9x9x9 possible variables for Sudoku
-#     num_clauses = len(dimacs_clauses)
-#     with open(output_file, 'w') as file:
-#         file.write(f"p cnf {num_vars} {num_clauses}\n")
-#         for clause in dimacs_clauses:
-#             file.write(f"{clause}\n")
+    # Write the DIMACS file
+    num_vars = 729  # 9x9x9 possible variables for Sudoku
+    num_clauses = len(dimacs_clauses)
+    with open(output_file, 'w') as file:
+        file.write(f"p cnf {num_vars} {num_clauses}\n")
+        for clause in dimacs_clauses:
+            file.write(f"{clause}\n")
 
 # def convert_sudoku_puzzles_to_dimacs(puzzles_file, rules_file, output_dir):
 #     """Converts all puzzles from a file to DIMACS format."""

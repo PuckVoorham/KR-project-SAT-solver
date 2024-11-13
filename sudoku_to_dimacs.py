@@ -8,7 +8,7 @@ Original file is located at
 """
 
 def sudoku_to_DIMACS(sudoku, grid_size):
-    clauses_DIMACS = []
+    assignments = []
 
     def var(x, y, k):
         return x * grid_size * grid_size + y * grid_size + k + 1
@@ -18,13 +18,12 @@ def sudoku_to_DIMACS(sudoku, grid_size):
         for y in range(grid_size):
             if sudoku[x][y] != 0:
                 k = sudoku[x][y] - 1
-                clauses_DIMACS.append([var(x, y, k)])
+                assignments.append([var(x, y, k)])
 
     # enocde to DIMACS format
     total_variables = grid_size * grid_size * grid_size
-    total_clauses = len(clauses_DIMACS)
-    dimacs = f"p cnf {total_variables} {total_clauses}\n"
-    for clause in clauses_DIMACS:
-        dimacs += " ".join(map(str, clause)) + " 0\n"
+    dimacs = f"p cnf {total_variables} {len(assignments)}\n"
+    for literal in assignments:
+        dimacs += f"{literal} 0\n"
 
     return dimacs

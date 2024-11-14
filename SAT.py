@@ -1,91 +1,56 @@
-def is_clause_satisfied(clause, assignment):
-    for literal in clause:
-        if abs(literal) not in assignment:
+import sys
+import os
+from dpll import dpll
+
+def read_dimacs_encoded_puzzle(file_name):
+    file = open(file_name, "r")
+    lines = file.readlines()
+
+    clauses = []
+    assignments = {}
+
+    for line in lines:
+        line = line.strip()
+        
+        if line.startswith('c'):
+            continue 
+        elif line.startswith('p cnf'):
             continue
-        if assignment[abs(literal)] == (literal > 0):
-            return True
-    return False
+        else:
+            clause = list(map(int, line.split()[:-1]))
+            if len(clause) == 1:
+                assignments[clause[0]] = True
 
-def is_clause_unsatisfied(clause, assignment):
-    for literal in clause:
-        if abs(literal) not in assignment:
-            return False
-        if assignment[abs(literal)] == (literal > 0):
-            return False
-    return True
+            else:
+                clauses.append(clause)
+    return clauses, assignments
 
-def find_unit_literal(clauses, assignment):
-    for clause in clauses:
-        unassigned_literals = [literal for literal in clause if abs(literal) not in assignment]
-        if len(unassigned_literals) == 1:
-            return unassigned_literals[0]
-    return None
+def process_input_file(input_file_path, strategy):
+    clauses, assignments = read_dimacs_encoded_puzzle(input_file_path)
+    solution = dpll(clauses, assignments, strategy)
+    with open(input_file_path + ".out", "w") as file:
+        if not solution:
+            return
+        values = sorted(solution.items())
+        for val in values:
+            if val[1]:
+                file.write(f"{val[0]} 0\n") 
+            else:
+                file.write(f"-{val[0]} 0\n") 
 
-def find_pure_literal(clauses, assignment):
-    literals = set()
-    for clause in clauses:
-        for literal in clause:
-            if abs(literal) not in assignment:
-                literals.add(literal)
-    for literal in literals:
-        if -literal not in literals:
-            return literal
-    return None
+if len(sys.argv) != 3:
+    print("Usage: python script.py <arg1> <arg2>")
+    sys.exit(1)
 
-def update_clauses(clauses, assignment):
-    new_clauses = []
-    
-    for clause in clauses:
-        # Remove satisfied clauses
-        if is_clause_satisfied(clause, assignment):
-            continue
+arg1 = sys.argv[1]
+if arg1 not in ['-S1', '-S2', '-S3']:
+    print("Error: The first argument must be '-S1', '-S2', or '-S3'.")
+    sys.exit(1)
 
-        #Remove tautologies
-        literals = set(clause)
-        if any(-literal in literals for literal in clause):
-            continue
+input_file_path = "puzzles/" + sys.argv[2]
 
-        shortened_clause = []
-        for literal in clause:
-            if abs(literal) not in assignment or assignment[abs(literal)] != (literal > 0):
-                shortened_clause.append(literal)
+if not os.path.isfile(input_file_path):
+    print(f"Error: The file '{input_file_path}' does not exist.")
+    sys.exit(1)
 
-        if shortened_clause:
-            new_clauses.append(shortened_clause)
-    
-    return new_clauses
-
-def dpll(clauses, assignment={}):
-    clauses = update_clauses(clauses, assignment)
-    if not clauses:
-        return assignment
-
-    if any(is_clause_unsatisfied(clause, assignment) for clause in clauses):
-        return False
-
-    unit_literal = find_unit_literal(clauses, assignment)
-    if unit_literal is not None:
-        new_assignment = {**assignment, abs(unit_literal): (unit_literal > 0)}
-        return dpll(clauses, new_assignment)
-
-    pure_literal = find_pure_literal(clauses, assignment)
-    if pure_literal is not None:
-        new_assignment = {**assignment, abs(pure_literal): pure_literal > 0}
-        return dpll(clauses, new_assignment)
-
-    for clause in clauses:
-        for literal in clause:
-            if abs(literal) not in assignment:
-                literal_var = abs(literal)
-                result_true = dpll(clauses, {**assignment, literal_var: True})
-                if result_true:
-                    return result_true
-                result_false = dpll(clauses, {**assignment, literal_var: False})
-                return result_false
-
-clauses = [[1, -3, 4], [-1, 3, 4], [-1, -2], [2, -4]]
-solution = dpll(clauses)
-if solution:
-    print("Satisfiable assignment:", solution)
-else:
-    print("Unsatisfiable")
+process_input_file(input_file_path, arg1[-1])

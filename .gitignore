@@ -1,4 +1,4 @@
 results/*.out
 *.pyc
 __pycache__/
-
+puzzles/

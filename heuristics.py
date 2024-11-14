@@ -25,7 +25,7 @@ def dlcs(clauses, literals):
     else:
         return literal, False
 
-def dlis(literals):
+def dlis(clauses, literals):
     counts = get_literal_counts(clauses, literals)
     literal = max(counts, key=lambda k: max(counts[k]))
     if counts[literal][0] > counts[literal][1]:

@@ -35,6 +35,6 @@ def generate_and_save_sudokus(grid_size, count, output_file):
     save_puzzles_to_file(puzzles, output_file)
     print(f"{count} Sudoku puzzles have been generated and saved to '{output_file}'.")
 
-grid_size = 9 
+grid_size = 9
 count = 50
 generate_and_save_sudokus(grid_size, count, output_file)

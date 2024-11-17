@@ -23,9 +23,9 @@ def generate_rotational_symmetric_sudoku(grid_size):
 def save_puzzles_to_file(puzzles, file_path):
     with open(file_path, "w") as file:
         for puzzle in puzzles:
-            for row in puzzle:
-                file.write(''.join(str(cell) if cell != '.' else '.' for cell in row) + "\n")
-            file.write("\n") 
+            single_line = ''.join(str(cell) if cell != '.' else '.' for row in puzzle for cell in row)
+            file.write(single_line + "\n")
+    print(f"Puzzles have been saved to '{file_path}'.")
 
 def generate_and_save_sudokus(grid_size, count, output_file):
     puzzles = []

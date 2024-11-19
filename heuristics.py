@@ -61,4 +61,4 @@ def mom(clauses, literals, k):
     for var in literals:
         scores[abs(var)] = counts[var] * (2 ** k) + counts[var]
     
-    return max(scores, key=scores.get)
+    return max(scores, key=scores.get), True

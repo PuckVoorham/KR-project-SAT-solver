@@ -59,29 +59,36 @@ def update_clauses(clauses, assignment):
     
     return new_clauses
 
-def dpll(clauses, assignment, strategy):
+def dpll(clauses, assignment, strategy, metrics=None):
+
+    if metrics is None:
+        metrics = {"backtracks": 0, "decisions": 0}
+
     clauses = update_clauses(clauses, assignment)
     if not clauses:
-        return assignment
+        return assignment, metrics
 
     if any(is_clause_unsatisfied(clause, assignment) for clause in clauses):
-        return False
+        metrics["backtracks"] += 1
+        return False, metrics
 
     unit_literal = find_unit_literal(clauses, assignment)
     if unit_literal is not None:
         new_assignment = {**assignment, abs(unit_literal): (unit_literal > 0)}
-        return dpll(clauses, new_assignment, strategy)
+        return dpll(clauses, new_assignment, strategy, metrics)
 
     pure_literal = find_pure_literal(clauses, assignment)
     if pure_literal is not None:
         new_assignment = {**assignment, abs(pure_literal): pure_literal > 0}
-        return dpll(clauses, new_assignment, strategy)
+        return dpll(clauses, new_assignment, strategy, metrics)
 
     literals = []
     for clause in clauses:
         for literal in clause:
             if abs(literal) not in assignment:
                 literals.append(abs(literal))
+
+    metrics ["decisions"] += 1
 
     if strategy == 1:
         literal_var, val = basic(literals)
@@ -90,7 +97,7 @@ def dpll(clauses, assignment, strategy):
     else:
         literal_var, val = mom(clauses, literals, k)
 
-    result = dpll(clauses, {**assignment, literal_var: val}, strategy)
-    if result:
+    result = dpll(clauses, {**assignment, literal_var: val}, strategy, metrics)
+    if result[0]:
         return result
-    return dpll(clauses, {**assignment, literal_var: not val}, strategy)
+    return dpll(clauses, {**assignment, literal_var: not val}, strategy, metrics)

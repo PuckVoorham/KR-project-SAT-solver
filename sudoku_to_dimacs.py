@@ -31,9 +31,9 @@ def puzzle_to_dimacs(puzzle, grid_size, dimacs_rules, num):
         x = i // grid_size + 1
         y = i % grid_size + 1
         if grid_size == 16:
-            var = 10**2 * x + 10 * y + k
-        else:
             var = 17**2 * x + 17 * y + k
+        else:
+            var = 10**2 * x + 10 * y + k
 
         assignments.append(var)
     
@@ -61,7 +61,7 @@ def convert_sudokus_to_dimacs(sudoku_file_name, dir_path, file_names):
 
         puzzle_to_dimacs(line, grid_size, dimacs[grid_size], num)
 
-sudoku_file_name = "valid_symmetric_sudokus.txt"
+sudoku_file_name = "1000 sudokus.txt"
 rule_files = ["sudoku-rules-4x4.txt", "sudoku-rules-9x9.txt", "sudoku-rules-16x16.txt"]
 rules_dir = "data/"
 convert_sudokus_to_dimacs(sudoku_file_name, rules_dir, rule_files)

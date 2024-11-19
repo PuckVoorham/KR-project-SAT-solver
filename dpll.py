@@ -1,4 +1,6 @@
-from heuristics import basic, rand, dlcs, dlis 
+from heuristics import basic, jeroslow_wang, mom
+
+k = 1
 
 def is_clause_satisfied(clause, assignment):
     for literal in clause:
@@ -82,14 +84,13 @@ def dpll(clauses, assignment, strategy):
                 literals.append(abs(literal))
 
     if strategy == 1:
-        literal_var = basic(literals)
+        literal_var, val = basic(literals)
     elif strategy == 2:
-        literal_var = basic(literals)
+        literal_var, val = jeroslow_wang(clauses, literals)
     else:
-        literal_var = basic(literals)
+        literal_var, val = mom(clauses, literals, k)
 
-    result_true = dpll(clauses, {**assignment, literal_var: True}, strategy)
-    if result_true:
-        return result_true
-    result_false = dpll(clauses, {**assignment, literal_var: False}, strategy)
-    return result_false
+    result = dpll(clauses, {**assignment, literal_var: val}, strategy)
+    if result:
+        return result
+    return dpll(clauses, {**assignment, literal_var: not val}, strategy)

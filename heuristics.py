@@ -12,7 +12,7 @@ def get_literal_counts(clauses, literals):
     return counts
 
 def basic(literals):
-    return literals[0]
+    return literals[0], True
 
 def rand(literals):
     return random.choice(literals)
@@ -33,8 +33,32 @@ def dlis(clauses, literals):
     else:
         return literal, False
 
-def jeroslow_wang(literals):
-    return None
+def jeroslow_wang(clauses, literals):
+    #two sided
+    scores = {var: 0.0 for var in literals}
+    scores.update({-var: 0.0 for var in literals})
 
-def mom(literals):
-    return None
+    for clause in clauses:
+        clause_weight = pow(2, -len(clause))
+        for literal in clause:
+            scores[literal] += clause_weight
+
+    combined_scores = {}
+    best_variable = max(combined_scores, key=combined_scores.get)
+    if scores[best_variable] >= scores[-best_variable]:
+        return best_variable, True
+    return -best_variable, False
+
+def mom(clauses, literals, k):
+    min_clause_len = min(len(clause) for clause in clauses)
+    smallest_clauses = [clause for clause in clauses if len(clause) == min_clause_len]
+    counts = defaultdict(int)
+    for clause in smallest_clauses:
+        for literal in clause:
+            counts[abs(literal)] += 1
+    
+    scores = defaultdict(float)
+    for var in literals:
+        scores[abs(var)] = counts[var] * (2 ** k) + counts[var]
+    
+    return max(scores, key=scores.get)

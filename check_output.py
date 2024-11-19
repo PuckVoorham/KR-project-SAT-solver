@@ -75,5 +75,3 @@ print(is_valid_sudoku(grid, len(grid)))
 if print_board == "1":
     for row in grid:
         print(" ".join(map(str, row)))
-
-

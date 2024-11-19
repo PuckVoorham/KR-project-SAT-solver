@@ -61,7 +61,7 @@ def convert_sudokus_to_dimacs(sudoku_file_name, dir_path, file_names):
 
         puzzle_to_dimacs(line, grid_size, dimacs[grid_size], num)
 
-sudoku_file_name = "generated_symmetric_sudokus.txt"
+sudoku_file_name = "valid_symmetric_sudokus.txt"
 rule_files = ["sudoku-rules-4x4.txt", "sudoku-rules-9x9.txt", "sudoku-rules-16x16.txt"]
 rules_dir = "data/"
 convert_sudokus_to_dimacs(sudoku_file_name, rules_dir, rule_files)

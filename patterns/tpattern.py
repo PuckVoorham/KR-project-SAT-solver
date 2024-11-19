@@ -45,11 +45,11 @@ def generate_sudoku_with_tpattern(sudoku, num_ts, num_clues):
         num_clues -= 1    
     return generated_game
 
-sudoku_file_name = "../1000 sudokus.txt"
+sudoku_file_name = "../solved/hypothesis.txt"
 input_file = open(sudoku_file_name, "r").readlines()
 num_ts = [2,3,4]
 num_clues = [i for i in range(25, 40)]
-output_file = open("tpattern.txt", "w")
+output_file = open("../generated/tpattern.txt", "w")
 for line in input_file:
     line = line.strip()
     if grid_size * grid_size != len(line):

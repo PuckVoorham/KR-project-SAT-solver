@@ -1,5 +1,6 @@
 import sys
 import os
+import time
 from dpll import dpll
 
 def read_dimacs_encoded_puzzle(file_name):
@@ -27,9 +28,14 @@ def read_dimacs_encoded_puzzle(file_name):
 
 def process_input_file(input_file_path, strategy):
     clauses, assignments = read_dimacs_encoded_puzzle(input_file_path)
-    solution = dpll(clauses, assignments, strategy)
+
+    start_time = time.time()
+    solution, metrics = dpll(clauses, assignments, strategy)
+    solving_time = time.time() - start_time
+
     with open(input_file_path + ".out", "w") as file:
         if not solution:
+            file.write("Unsatisfiable\n")
             return
         values = sorted(solution.items())
         for val in values:
@@ -37,6 +43,11 @@ def process_input_file(input_file_path, strategy):
                 file.write(f"{val[0]} 0\n") 
             else:
                 file.write(f"-{val[0]} 0\n") 
+
+        file.write(f"Metrics:\n")
+        file.write(f"Backtracks: {metrics['backtracks']}\n")
+        file.write(f"Decisions: {metrics['decisions']}\n")
+        file.write(f"Solving Time: {solving_time:.4f} seconds\n")
 
 if len(sys.argv) != 3:
     print("Usage: python script.py <arg1> <arg2>")

@@ -1,9 +1,6 @@
 import math
+import sys
 import os
-
-output_folder = "puzzles/"
-if not os.path.exists(output_folder):
-    os.makedirs(output_folder)
 
 def read_dimacs_rules(dir_path, file_names):
     clauses = {}
@@ -17,17 +14,24 @@ def read_dimacs_rules(dir_path, file_names):
             size = 16
         else:
             return
-        clauses[size] = file.read()
+        clauses[size] = file.readlines()
     return clauses
 
 def puzzle_to_dimacs(puzzle, grid_size, dimacs_rules, num):
-    assignments = []
+    puzzle_rules = []
+    puzzle_rules.extend(dimacs_rules)
 
     # already filled cells
     for i in range(len(puzzle)):
         if puzzle[i] == ".":
             continue
-        k = int(puzzle[i])
+        if grid_size == 16:
+            if puzzle[i].isalpha():
+                k = 10 + ord(puzzle[i]) - ord("A")
+            else:
+                k = int(puzzle[i])
+        else:
+            k = int(puzzle[i])
         x = i // grid_size + 1
         y = i % grid_size + 1
         if grid_size == 16:
@@ -35,19 +39,15 @@ def puzzle_to_dimacs(puzzle, grid_size, dimacs_rules, num):
         else:
             var = 10**2 * x + 10 * y + k
 
-        assignments.append(var)
+        puzzle_rules.append(f"{var} 0\n")
     
-    # enocde to DIMACS format
-    with open(output_folder + f"sudoku_nr_{num}", "w") as output_file:
-        output_file.write(dimacs_rules)
+    return puzzle_rules
 
-        for literal in assignments:
-            output_file.write(f"{literal} 0\n")
-
-def convert_sudokus_to_dimacs(sudoku_file_name, dir_path, file_names):
-    dimacs = read_dimacs_rules(dir_path, file_names)
+def convert_sudokus_to_dimacs(sudoku_file_name, dimacs):
     file = open(sudoku_file_name,"r")
     lines = file.readlines()
+
+    result = []
 
     for (num, line) in enumerate(lines):
         line = line.strip()
@@ -59,9 +59,21 @@ def convert_sudokus_to_dimacs(sudoku_file_name, dir_path, file_names):
             print(f"Rules not found for grid size {grid_size}")
             continue
 
-        puzzle_to_dimacs(line, grid_size, dimacs[grid_size], num)
+        result.append(puzzle_to_dimacs(line, grid_size, dimacs[grid_size], num))
+    return result
 
-sudoku_file_name = "4x4.txt"
-rule_files = ["sudoku-rules-4x4.txt", "sudoku-rules-9x9.txt", "sudoku-rules-16x16.txt"]
-rules_dir = "data/"
-convert_sudokus_to_dimacs(sudoku_file_name, rules_dir, rule_files)
+if __name__ == "__main__":
+    sudoku_file_name = sys.argv[1]
+    if not os.path.isfile(sudoku_file_name):
+        print(f"Error: The file '{sudoku_file_name}' does not exist.")
+        sys.exit(1)
+
+    rule_files = ["sudoku-rules-4x4.txt", "sudoku-rules-9x9.txt", "sudoku-rules-16x16.txt"]
+    rules_dir = "data/"
+    dimacs = read_dimacs_rules(rules_dir, rule_files)
+    result = convert_sudokus_to_dimacs(sudoku_file_name, dimacs)
+
+    for num, puzzle_rules in enumerate(result):
+        with open(f"sudoku_nr_{num}", "w") as output_file:
+            for rule in puzzle_rules:
+                output_file.write(rule)

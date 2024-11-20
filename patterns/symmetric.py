@@ -29,15 +29,3 @@ def generate_sudoku_with_symmetric_clues(sudoku):
         generated_game[var_symmetric] = sudoku[var_symmetric]
     return generated_game
 
-sudoku_file_name = "../solved/hypothesis.txt"
-input_file = open(sudoku_file_name, "r").readlines()
-num_ts = [2,3,4]
-num_clues = [i for i in range(25, 35)]
-output_file = open("../generated/symmetric.txt", "w")
-for line in input_file:
-    line = line.strip()
-    line = "1"*81
-    if grid_size * grid_size != len(line):
-        continue
-    game = generate_sudoku_with_symmetric_clues(line)
-    output_file.write("".join(game) + "\n")

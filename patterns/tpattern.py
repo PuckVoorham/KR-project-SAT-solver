@@ -15,7 +15,9 @@ def var_in_boxes(boxes, var):
             return True
     return False
 
-def generate_sudoku_with_tpattern(sudoku, num_ts, num_clues):
+def generate_sudoku_with_tpattern(sudoku):
+    num_ts = random.choice([2,3,4])
+    num_clues = random.choice([i for i in range(25, 40)])
     generated_game = ["." for _ in range(grid_size * grid_size)]
     boxes = random.sample([i for i in range(grid_size)], num_ts)
     for box in boxes:
@@ -45,14 +47,3 @@ def generate_sudoku_with_tpattern(sudoku, num_ts, num_clues):
         num_clues -= 1    
     return generated_game
 
-sudoku_file_name = "../solved/hypothesis.txt"
-input_file = open(sudoku_file_name, "r").readlines()
-num_ts = [2,3,4]
-num_clues = [i for i in range(25, 40)]
-output_file = open("../generated/tpattern.txt", "w")
-for line in input_file:
-    line = line.strip()
-    if grid_size * grid_size != len(line):
-        continue
-    game = generate_sudoku_with_tpattern(line, random.choice(num_ts), random.choice(num_clues))
-    output_file.write("".join(game) + "\n")

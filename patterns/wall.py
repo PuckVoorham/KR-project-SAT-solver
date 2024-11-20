@@ -29,7 +29,8 @@ def wall_pattern(sudoku, num_walls=None):
                 wall_pattern_sudoku[start_row + row_offset, start_col + i] = sudoku[start_row + row_offset, start_col + i]
 
     empty_cells = [(r, c) for r in range(grid_size) for c in range(grid_size) if wall_pattern_sudoku[r, c] == 0]
-    extra_clues = random.sample(empty_cells, min(len(empty_cells), grid_size))  #proportional to the size
+    extra_clues_size = random.choice([i for i in range(25,40)]) - (grid_size * grid_size - len(empty_cells))
+    extra_clues = random.sample(empty_cells, max(0, extra_clues_size))
     for r, c in extra_clues:
         wall_pattern_sudoku[r, c] = sudoku[r, c]
 

@@ -43,16 +43,15 @@ def get_grid_pos(var, grid_size):
     return x,y,k
 
 def read_solved_sudoku(solved_dimacs):
-    lines = solved_dimacs.readlines()
-    grid_size = int(math.cbrt(len(lines)))
+    grid_size = int(math.cbrt(len(solved_dimacs)))
     if grid_size == 0:
         print("Unsat")
         return
-    if grid_size * grid_size * grid_size != len(lines):
+    if grid_size * grid_size * grid_size != len(solved_dimacs):
         print(f"Error: Length is not a perfect square")
         return
     grid = [["." for _ in range(grid_size)] for _ in range(grid_size)]
-    for line in lines:
+    for line in solved_dimacs:
         var = int(line.split(" ")[0])
         if var < 0:
             continue
@@ -62,16 +61,16 @@ def read_solved_sudoku(solved_dimacs):
             return
         grid[x - 1][y - 1] = k
     return grid
+if __name__ == "__main__":
+    output_file_path = "puzzles/" + sys.argv[1]
+    if not os.path.isfile(output_file_path):
+        print(f"Error: The file '{output_file_path}' does not exist.")
+        sys.exit(1)
+    print_board = sys.argv[2]
+    solved_dimacs = open(output_file_path, 'r').readlines()
+    grid = read_solved_sudoku(solved_dimacs)
+    print(is_valid_sudoku(grid, len(grid)))
 
-output_file_path = "puzzles/" + sys.argv[1]
-if not os.path.isfile(output_file_path):
-    print(f"Error: The file '{output_file_path}' does not exist.")
-    sys.exit(1)
-print_board = sys.argv[2]
-solved_dimacs = open(output_file_path, 'r')
-grid = read_solved_sudoku(solved_dimacs)
-print(is_valid_sudoku(grid, len(grid)))
-
-if print_board == "1":
-    for row in grid:
-        print(" ".join(map(str, row)))
+    if print_board == "1":
+        for row in grid:
+            print(" ".join(map(str, row)))

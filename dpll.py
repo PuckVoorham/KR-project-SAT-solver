@@ -44,10 +44,13 @@ def jeroslow_wang(clauses, literals):
             scores[literal] += clause_weight
 
     combined_scores = {}
+    for key, value in scores.items():
+        abs_key = abs(key)
+        combined_scores[abs_key] = combined_scores.get(abs_key, 0) + value
     best_variable = max(combined_scores, key=combined_scores.get)
     if scores[best_variable] >= scores[-best_variable]:
         return best_variable, True
-    return -best_variable, False
+    return best_variable, False
 
 def mom(clauses, literals, k=1):
     min_clause_len = min(len(clause) for clause in clauses)
@@ -112,7 +115,7 @@ def update_clauses(clauses, assignment):
 
         shortened_clause = []
         for literal in clause:
-            if abs(literal) not in assignment or assignment[abs(literal)] != (literal > 0):
+            if abs(literal) not in assignment:
                 shortened_clause.append(literal)
 
         if shortened_clause:

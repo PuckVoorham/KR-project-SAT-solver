@@ -1,7 +1,5 @@
 results/*.out
 *.pyc
 __pycache__/
-puzzles/
-solved/
 *.out
 *.sh

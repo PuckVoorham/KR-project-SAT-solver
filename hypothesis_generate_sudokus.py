@@ -1,4 +1,5 @@
 import os
+import random
 import numpy as np
 from SAT import process_dimacs_sudoku
 from sudoku_to_dimacs import convert_sudokus_to_dimacs, read_dimacs_rules
@@ -56,6 +57,14 @@ for sudoku in dimacs_sudokus:
     output_file.write(result + "\n")
     output_file.flush()
 print("No of sudokus solved: {} out of {}".format(len(solved_sudokus), len(dimacs_sudokus)))
+
+baseline_sudokus = []
+for sudoku in solved_sudokus:
+    game = ["." for _ in range(81)]
+    clue_positions = random.sample(range(0, 81), random.choice(range(25,40)))
+    for position in clue_positions:
+        game[position] = sudoku[position]
+    output_file.write("".join(game) + "\n")
 
 symmetric_sudokus = []
 output_file = open("generated/symmetric.txt", "w")

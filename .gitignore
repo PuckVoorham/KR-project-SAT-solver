@@ -3,6 +3,5 @@ results/*.out
 __pycache__/
 puzzles/
 solved/
-result/
 generated/
 *.out

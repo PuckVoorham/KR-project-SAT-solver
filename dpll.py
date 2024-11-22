@@ -75,6 +75,8 @@ def is_clause_satisfied(clause, assignment):
     return False
 
 def is_clause_unsatisfied(clause, assignment):
+    if len(clause) == 0:
+        return True
     for literal in clause:
         if abs(literal) not in assignment:
             return False
@@ -118,8 +120,7 @@ def update_clauses(clauses, assignment):
             if abs(literal) not in assignment:
                 shortened_clause.append(literal)
 
-        if shortened_clause:
-            new_clauses.append(shortened_clause)
+        new_clauses.append(shortened_clause)
     
     return new_clauses
 
